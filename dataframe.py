@@ -63,7 +63,7 @@ for course in COURSES:
                     "timeblock_id": tb_id,
                     "day": block.day,
                     "start": block.start,
-                    "end_time": block.end
+                    "end": block.end
                 })
             
             # 3. df_sections: The bridge linking CRN to TimeBlock IDs
@@ -77,7 +77,7 @@ for course in COURSES:
 # Convert to DataFrames
 inputdf = pd.DataFrame(course_rows).drop_duplicates()
 sectiondf = pd.DataFrame(section_rows)
-timeblocksdf = pd.DataFrame(timeblock_rows)
+timeblockdf = pd.DataFrame(timeblock_rows)
 
 
 # Manual error cleanup
@@ -97,8 +97,8 @@ inputdf.loc[inputdf['crn'] == '80643', 'course_code'] = 'MATH 408'
 # JOIN timeblockdf ON sectiondf.timeblock_id = timeblockdf.timeblock_id"
 
 
-
-
-
+sectiondf.info()
+timeblockdf.info()
+inputdf.info()
 
 
