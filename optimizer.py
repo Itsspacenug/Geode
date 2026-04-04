@@ -37,3 +37,9 @@ def early_class_penalty(schedule: list[Section]) -> int:
             total_penalty += (EARLY_THRESHOLD - tb.start)
     
     return -total_penalty
+
+def calculate_total_score(schedule : list[Section], weights: dict) -> int:
+    compact = compactness_score(schedule)
+    early = early_class_penalty(schedule)
+    
+    score = (weights.get("compactness",1.0)*compact)+(weights.get("early_morning", 1.0)*early)
