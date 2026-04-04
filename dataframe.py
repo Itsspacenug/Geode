@@ -73,9 +73,17 @@ for course in COURSES:
                 "timeblock_id": seen_timeblocks[tb_key]
             })
 
-# Convert to DataFrames
-df_courses = pd.DataFrame(course_rows).drop_duplicates()
-df_sections = pd.DataFrame(section_rows)
-df_timeblocks = pd.DataFrame(timeblock_rows)
 
+# Convert to DataFrames
+inputdf = pd.DataFrame(course_rows).drop_duplicates()
+sectiondf = pd.DataFrame(section_rows)
+timeblocksdf = pd.DataFrame(timeblock_rows)
+
+
+# Manual error cleanup
+# This is usually safer and faster for single-row fixes
+inputdf.loc[inputdf['crn'] == '80643', 'course_name'] = 'COMPUTATIONAL METHODS FOR DIFFERENTIAL EQUATIONS'
+inputdf.loc[inputdf['crn'] == '80643', 'course_code'] = 'MATH 408'
+
+print(inputdf)
 
