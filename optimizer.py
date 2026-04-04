@@ -71,9 +71,43 @@ def more_days_penalty(schedule: list[Section]) -> int:
             
     return max(0, len(days)-MINIMUM_DAYS)
 
+def long_day_penalty(schedule: list[Section]) -> int:
+    MAX_LENGTH_THRESHOLD = 240
+    total_penalty = 0
+    day_map = defaultdict(list)
+    day_lengths = []
 
-# Long days
-# short days
+    blocks = get_all_time_block(schedule)
+    for tb in blocks:
+        day_map[tb.day].append(tb)
+        
+    for day in day_map:
+        day_blocks = sorted(day_map[day], key = lambda x: x.start)
+        day_lengths.append(day_blocks[-1].end - day_blocks[0].start)
+        
+    for length in day_lengths:
+        total_penalty += max(0, length-MAX_LENGTH_THRESHOLD)
+        
+    return total_penalty
+
+def short_day_penalty(schedule: list[Section]) -> int:
+    MIN_LENGTH_THRESHOLD = 180
+    total_penalty = 0
+    day_map = defaultdict(list)
+    day_lengths = []
+    
+    blocks = get_all_time_block(schedule)
+    for tb in blocks:
+        day_map[tb.day].append(tb)
+        
+    for day in day_map:
+        day_blocks = sorted(day_map[day], key=lambda x: x.start)
+        day_lengths.append(day_blocks[-1].end - day_blocks[0].start)
+        
+    for length in day_lengths:
+        total_penalty += max(0, MIN_LENGTH_THRESHOLD-length)
+
+
 # lunch break preservation
 # Gaps between classes (different from lunch break?)
 # Back-to-back classes
