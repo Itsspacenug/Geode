@@ -14,7 +14,12 @@ raw_schedules = find_all_schedules(courses)
 
 user_weights = {
     "compactness": 1.0,
-    "early_morning": 2.5
+    "early_morning": 2.5,
+    "late_evening": 0.8,
+    "more_days": 1.5,
+    "few_days": 0.75,
+    "short_days": 1.5,
+    "long_days": 0.5
 }
 
 
