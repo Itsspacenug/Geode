@@ -33,13 +33,6 @@ df_split = df_split.replace('None', np.nan, inplace=True)
 coursedf = df_split
 #print(coursedf)
 
-import pandas as pd
-import duckdb
-from sample_data import COURSES
-
-import pandas as pd
-from sample_data import COURSES
-
 course_rows = []
 section_rows = []
 timeblock_rows = []
