@@ -1,9 +1,19 @@
 import { useState } from 'react'
 import CourseSearch from '../components/CourseSearch'
 import CourseChips from '../components/CourseChips'
+import PreferenceSliders from '../components/PreferenceSliders'
+
+const DEFAULT_WEIGHTS = {
+    compactness: 0.5,
+    time_of_day: 0.5,
+    day_spread: 0.5,
+    day_length: 0.5,
+    lunch_breaks: 0.5
+}
 
 export default function OptimizerPage() {
     const [selectedCourses, setSelectedCourses] = useState([])
+    const [weights, setWeights] = useState(DEFAULT_WEIGHTS)
 
     const handleAdd = (course) => {
         if (selectedCourses.find(c => c.code === course.code)) return
@@ -12,6 +22,14 @@ export default function OptimizerPage() {
 
     const handleRemove = (course) => {
         setSelectedCourses(prev => prev.filter(c => c.code !== course.code))
+    }
+
+    const handleWeightChange = (key, value) => {
+        setWeights(prev => ({ ...prev, [key]: value}))
+    }
+
+    const handleGenerate = () => {
+        console.log('Generating with:', { selectedCourses, weights })
     }
 
     return (
@@ -27,6 +45,33 @@ export default function OptimizerPage() {
                 courses={selectedCourses}
                 onRemove={handleRemove}
             />
+
+            <hr style={{ margin: '32px 0', borderColor: '#e5e7eb' }} />
+
+            <h2 style={{ marginBottom: '24px' }}>Preferences</h2>
+
+            <PreferenceSliders
+                weights={weights}
+                onChange={handleWeightChange}
+            />
+
+            <button
+                onClick={handleGenerate}
+                disabled={selectedCourses.length === 0}
+                style={{
+                    marginTop: '32px',
+                    width: '100%',
+                    padding: '12px',
+                    background: selectedCourses.length == 0 ? '#d1d5db' : '#4f46e5',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '8px',
+                    fontSize: '16px',
+                    cursor: selectedCourses.length === 0 ? 'not-allowed' : 'pointer',
+                }}
+            >
+                Generate schedules
+            </button>
         </div>
     )
 }
