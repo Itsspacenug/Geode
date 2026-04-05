@@ -66,3 +66,5 @@ const timeblockdf = schedule.sections.flatMap(s =>
     </div>
   );
 };
+
+export default WeeklyGrid;
