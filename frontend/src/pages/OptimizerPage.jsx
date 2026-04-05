@@ -13,16 +13,8 @@ const DEFAULT_WEIGHTS = {
     lunch_breaks: 0.5
 };
 
-export default function OptimizerPage() {
-    // 1. State Management
-    const [selectedCourses, setSelectedCourses] = useState([]);
-    const [weights, setWeights] = useState(DEFAULT_WEIGHTS);
-    const [results, setResults] = useState([]);
-    const [currentIndex, setCurrentIndex] = useState(0);
+export default function OptimizerPage({ onSelectSchedule }) {
 
-    const { mutate, isPending, isError, error } = useOptimizer();
-
-    // 2. Data Transformation Logic (The "Link" between Python results and Grid)
     function toGridProps(sections) {
         if (!sections) return { inputdf: [], sectiondf: [], timeblockdf: [] };
 
@@ -49,25 +41,12 @@ export default function OptimizerPage() {
     return { inputdf, sectiondf, timeblockdf }
 }
 
-export default function OptimizerPage({ onSelectSchedule }) {
     const [selectedCourses, setSelectedCourses] = useState([])
     const [weights, setWeights] = useState(DEFAULT_WEIGHTS)
     const [results, setResults] = useState([])
     const [currentIndex, setCurrentIndex] = useState(0)
 
     const { mutate, isPending, isError, error } = useOptimizer()
-
-        const timeblockdf = sections.flatMap(s =>
-            s.time_blocks.map((tb, i) => ({
-                timeblock_id: `${s.course_code}-${s.section_id}-${i}`,
-                day: tb.day,
-                start: tb.start,
-                end: tb.end,
-            }))
-        );
-
-        return { inputdf, sectiondf, timeblockdf };
-    }
 
     // 3. Handlers
     const handleAdd = (course) => {
