@@ -1,10 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from sample_data import COURSES
+from fake_data import load_courses
 from generator import find_all_schedules
 from optimizer import calculate_total_score
 
+COURSES = load_courses()
 
 # Create the FastAPI app instance
 app = FastAPI()
