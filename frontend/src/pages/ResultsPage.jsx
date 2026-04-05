@@ -1,10 +1,21 @@
 import React, { useState } from 'react';
 import WeeklyGrid from '../components/WeeklyGrid';
 import './ResultsPage.css';
+const formatMinutesToTime = (totalMinutes) => {
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  
+  const period = hours >= 12 ? 'PM' : 'AM';
+  const displayHours = hours % 12 || 12; // Converts 0 to 12 for AM/PM
+  const displayMinutes = minutes.toString().padStart(2, '0'); // Adds leading zero
+
+  return `${displayHours}:${displayMinutes} ${period}`;
+};
 
 //const ResultsPage = ({ generatedSchedules, coursedf, sectiondf, timeblockdf }) => {
 const ResultsPage = ({ schedule, onBack }) => {
-
+   
+  
   // 1. Navigation State
   //const [currentIndex, setCurrentIndex] = useState(0);
   
@@ -31,7 +42,7 @@ const ResultsPage = ({ schedule, onBack }) => {
             end: tb.end
         }))
     )
-
+   
     const coursedf = []
 
 /*
@@ -84,8 +95,8 @@ const ResultsPage = ({ schedule, onBack }) => {
               <p><strong>CRN:</strong> {selectedData.input.crn}</p>
               <p><strong>Section:</strong> {selectedData.section.section_id}</p>
               <hr />
-              <p>Start: {selectedData.block.start} mins</p>
-              <p>End: {selectedData.block.end} mins</p>
+              <p>Start: {formatMinutesToTime(selectedData.block.start)}</p>
+              <p>End: {formatMinutesToTime(selectedData.block.end)}</p>
             </div>
           ) : (
             <p>Select a course to see details</p>
