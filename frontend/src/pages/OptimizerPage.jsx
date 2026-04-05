@@ -24,7 +24,7 @@ export default function OptimizerPage() {
             />
 
             <CourseChips
-                course={selectedCourses}
+                courses={selectedCourses}
                 onRemove={handleRemove}
             />
         </div>

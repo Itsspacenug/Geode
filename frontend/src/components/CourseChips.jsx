@@ -12,7 +12,7 @@ export default function CourseChips({ courses = [], onRemove }) {
                     background: '#e0e7ff',
                     borderRadius: '999px',
                 }}>
-                    <span>{courses.code} - {courses.title}</span>
+                    <span>{course.code} - {course.title}</span>
                     <button
                         onMouseDown={() => onRemove(course)}
                         style={{ background: 'none', border: 'none', cursor: 'pointer' }}
