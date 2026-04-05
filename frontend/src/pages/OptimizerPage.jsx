@@ -3,6 +3,7 @@ import CourseSearch from '../components/CourseSearch'
 import CourseChips from '../components/CourseChips'
 import PreferenceSliders from '../components/PreferenceSliders'
 import { useOptimizer } from '../hooks/useOptimizer'
+import WeeklyGrid from '../components/WeeklyGrid'
 
 const DEFAULT_WEIGHTS = {
     compactness: 0.5,
@@ -12,9 +13,35 @@ const DEFAULT_WEIGHTS = {
     lunch_breaks: 0.5
 }
 
+function toGridProps(sections) {
+    const inputdf = sections.map(s => ({
+        crn: `${s.course_code}-${s.section_id}`,
+        code: s.course_code,
+    }))
+
+    const sectiondf = sections.map(s => ({
+        crn: `${s.course_code}-${s.section_id}`,
+        section_id: s.section_id,
+        timeblock_id: s.time_blocks.map((_, i) => `${s.course_code}-${s.section_id}-${i}`),
+    }))
+
+    const timeblockdf = sections.flatMap(s =>
+        s.time_blocks.map((tb, i) => ({
+            timeblock_id: `${s.course_code}-${s.section_id}-${i}`,
+            day: tb.day,
+            start: tb.start,
+            end: tb.end,
+        }))
+    )
+
+    return { inputdf, sectiondf, timeblockdf }
+}
+
 export default function OptimizerPage() {
     const [selectedCourses, setSelectedCourses] = useState([])
     const [weights, setWeights] = useState(DEFAULT_WEIGHTS)
+    const [results, setResults] = useState([])
+    const [currentIndex, setCurrentIndex] = useState(0)
 
     const { mutate, isPending, isError, error } = useOptimizer()
 
@@ -37,6 +64,8 @@ export default function OptimizerPage() {
             {
                 onSuccess: (data) => {
                     console.log('Schedules recieved:', data.results)
+                    setResults(data.results)
+                    setCurrentIndex(0)
                 },
                 onError: (err) => {
                     console.error('Optimize failed:',err)
@@ -46,63 +75,77 @@ export default function OptimizerPage() {
     }
 
     return (
-        <div style={{ maxWidth: '600px', margin: '0 auto', padding: '32px' }}>
-            <h1>Build your schedule</h1>
+    <div style={{ maxWidth: '600px', margin: '0 auto', padding: '32px' }}>
+        <h1>Build your schedule</h1>
 
-            <CourseSearch
-                selectedCourses={selectedCourses}
-                onAdd={handleAdd}
-            />
+        <CourseSearch
+            selectedCourses={selectedCourses}
+            onAdd={handleAdd}
+        />
 
-            <CourseChips
-                courses={selectedCourses}
-                onRemove={handleRemove}
-            />
+        <CourseChips
+            courses={selectedCourses}
+            onRemove={handleRemove}
+        />
 
-            <hr style={{ margin: '32px 0', borderColor: '#e5e7eb' }} />
+        <hr style={{ margin: '32px 0', borderColor: '#e5e7eb' }} />
 
-            <h2 style={{ marginBottom: '24px' }}>Preferences</h2>
+        <h2 style={{ marginBottom: '24px' }}>Preferences</h2>
 
-            <PreferenceSliders
-                weights={weights}
-                onChange={handleWeightChange}
-            />
+        <PreferenceSliders
+            weights={weights}
+            onChange={handleWeightChange}
+        />
 
-            {isError && (
-                <p style={{ color: 'red', marginTop: '12px' }}>
-                    Something went wrong: {error.message}
-                </p>
-            )}
+        {isError && (
+            <p style={{ color: 'red', marginTop: '12px' }}>
+                Something went wrong: {error.message}
+            </p>
+        )}
 
-            <button
-                onClick={handleGenerate}
-                disabled={selectedCourses.length === 0 || isPending}
-                style={{
-                    marginTop: '32px',
-                    width: '100%',
-                    padding: '12px',
-                    background: selectedCourses.length == 0 || isPending ? '#d1d5db' : '#4f46e5',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '8px',
-                    fontSize: '16px',
-                    cursor: selectedCourses.length === 0 || isPending ? 'not-allowed' : 'pointer',
-                }}
-            >
-                {isPending ? 'Generating...' : 'Generate schedules'}
-            </button>
-        </div>
-    )
+        <button
+            onClick={handleGenerate}
+            disabled={selectedCourses.length === 0 || isPending}
+            style={{
+                marginTop: '32px',
+                width: '100%',
+                padding: '12px',
+                background: selectedCourses.length === 0 || isPending ? '#d1d5db' : '#4f46e5',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                fontSize: '16px',
+                cursor: selectedCourses.length === 0 || isPending ? 'not-allowed' : 'pointer',
+            }}
+        >
+            {isPending ? 'Generating...' : 'Generate schedules'}
+        </button>
+
+        {results.length > 0 && (
+            <div style={{ marginTop: '40px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+                    <button
+                        onClick={() => setCurrentIndex(i => Math.max(0, i - 1))}
+                        disabled={currentIndex === 0}
+                    >
+                        ← Prev
+                    </button>
+                    <span>Schedule {currentIndex + 1} of {results.length} — Score: {results[currentIndex].score.toFixed(2)}</span>
+                    <button
+                        onClick={() => setCurrentIndex(i => Math.min(results.length - 1, i + 1))}
+                        disabled={currentIndex === results.length - 1}
+                    >
+                        Next →
+                    </button>
+                </div>
+
+                <WeeklyGrid
+                    {...toGridProps(results[currentIndex].sections)}
+                    coursedf={[]}
+                    onBlockClick={() => {}}
+                />
+            </div>
+        )}
+    </div>
+)
 }
-
-/*const [selectedCourses, setSelectedCourses] = useState([])
-
-const handleAdd = (course) => {
-    if (selectedCourses.find(c => c.code === course.code)) return
-    setSelectedCourses(prev => [...prev, course])
-}
-
-const handleRemove = (course) => {
-    setSelectedCourses(prev => prev.filter(c => c.code !== course.code))
-}
-    */

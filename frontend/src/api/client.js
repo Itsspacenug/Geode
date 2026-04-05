@@ -10,7 +10,7 @@ async function request(endpoint, options={}) {
     })
 
     if (!res.ok) {
-        throw new Error('Reqeust failed: ${res.status}')
+        throw new Error(`Reqeust failed: ${res.status}`)
     }
 
     return res.json()
