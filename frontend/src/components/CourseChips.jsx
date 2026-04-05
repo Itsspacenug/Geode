@@ -1,10 +1,10 @@
-export default function CourseChips({ courses, onRemove }) {
+export default function CourseChips({ courses = [], onRemove }) {
     if (courses.length === 0) return null
 
     return (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
             {courses.map(course => (
-                <div key={courses.code} style={{
+                <div key={course.code} style={{
                     display: 'flex',
                     alignItems: 'center',
                     gap: '6px',

@@ -1,7 +1,7 @@
-const BASE_URL = 'https://localhost:8000'
+const BASE_URL = 'http://localhost:8000'
 
 async function request(endpoint, options={}) {
-    const res = await fetch('${BASE_URL}${endpoint}', {
+    const res = await fetch(`${BASE_URL}${endpoint}`, {
         headers: {
             'Content-Type': 'application/json',
             ...options.headers,

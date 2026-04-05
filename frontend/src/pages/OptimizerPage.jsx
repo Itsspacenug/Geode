@@ -3,7 +3,7 @@ import CourseSearch from '../components/CourseSearch'
 import CourseChips from '../components/CourseChips'
 
 export default function OptimizerPage() {
-    const [selectedCourse, setSelectedCourses] = useState([])
+    const [selectedCourses, setSelectedCourses] = useState([])
 
     const handleAdd = (course) => {
         if (selectedCourses.find(c => c.code === course.code)) return
@@ -19,7 +19,7 @@ export default function OptimizerPage() {
             <h1>Build your schedule</h1>
 
             <CourseSearch
-                selectedCourses={selectdeCourses}
+                selectedCourses={selectedCourses}
                 onAdd={handleAdd}
             />
 
@@ -31,7 +31,7 @@ export default function OptimizerPage() {
     )
 }
 
-const [selectedCourses, setSelectedCourses] = useState([])
+/*const [selectedCourses, setSelectedCourses] = useState([])
 
 const handleAdd = (course) => {
     if (selectedCourses.find(c => c.code === course.code)) return
@@ -41,3 +41,4 @@ const handleAdd = (course) => {
 const handleRemove = (course) => {
     setSelectedCourses(prev => prev.filter(c => c.code !== course.code))
 }
+    */

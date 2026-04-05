@@ -8,10 +8,13 @@ export default function CourseSearch({ selectedCourses, onAdd }) {
 
     const results = (data ?? [])
         .filter(c => !selectedCourses.find(s => s.code === c.code))
-        .filter(c =>
-            c.code.toLowerCase().includes(query.toLowerCase()) ||
-            c.title.toLowerCase().includes(query.toLowerCase())
-        )
+        .filter(c => {
+            const code = c.code?.toLowerCase() ?? ''
+            const title = c.title?.toLowerCase() ?? ''
+            const search = query.toLowerCase()
+
+            return code.includes(search) || title.includes(search)
+        })
         .slice(0,10)
 
     const handleSelect = (course) => {
@@ -60,7 +63,7 @@ export default function CourseSearch({ selectedCourses, onAdd }) {
     )
 }
 
-
+/*
 
 const results = (data ?? []).filter(course =>
     course.code.toLowerCase().includes(query.toLowerCase()) ||
@@ -73,3 +76,4 @@ const handleSelect = (course) => {
     setIsOpen(false)
 }
 
+*/
