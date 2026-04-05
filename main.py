@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi import HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from fake_data import load_courses
@@ -44,7 +45,7 @@ def get_courses():
             }
             for section in classes.sections
             ],
-            "departments": classes.department,
+            "department": classes.department,
 
 
         }
@@ -54,8 +55,19 @@ def get_courses():
 @app.post("/optimize")
 def run_optimize(request: OptimizeRequests):
     filtered_courses = [c for c in COURSES if c.course_code in request.course_codes] #Filter all coursese that the user has chosen from requests
+    
+    if not filtered_courses:
+        return {"results": [], "message": "No matching courses found."}
+    
     all_possible_schedules = find_all_schedules(filtered_courses) # finds all permiatations from the filtered courses
     #calculates the score of each possible schedule based on the users request of preferences and ranks it from highest to lowest score
+    
+    if not all_possible_schedules:
+        return {
+            "results": [],
+            "message": "No valid schedules found due to time conflicts. Try removing a course."
+        }
+        
     sorted_schedules_score = sorted(
         all_possible_schedules,
         key=lambda schedule: calculate_total_score(schedule, request.preferences),
@@ -81,5 +93,6 @@ def run_optimize(request: OptimizeRequests):
             ]
         }
         for rank, schedule in enumerate(sorted_schedules_score[:3], start=1)
-    ]
+    ],
+    "message": "Success"
 }

@@ -9,12 +9,14 @@ def make_fake_sections(course_code, department, n=None):
     n = n or random.randint(2,4)
     section_ids = ['A', 'B', 'C', 'D']
     
-    chosen_slots = random.sample(list(enumerate(MWF_SLOTS + TR_SLOTS)), n)
+    mwf_options = [(slot, [0,2,4]) for slot in MWF_SLOTS]
+    tr_options = [(slot, [1,3]) for slot in TR_SLOTS]
+    all_options = mwf_options+tr_options
+    
+    chosen_configs = random.sample(all_options, min(n, len(all_options)))
     
     sections = []
-    for i, (slot_index, (start, end)) in enumerate(chosen_slots):
-        days = [0,2,4] if slot_index < len(MWF_SLOTS) else [1,3]
-        
+    for i, ((start, end), days) in enumerate(chosen_configs): 
         sections.append(Section(
             course_reg_num=f"{course_code}-{section_ids[i]}",
             section_id=section_ids[i],

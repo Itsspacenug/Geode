@@ -13,9 +13,7 @@ const DEFAULT_WEIGHTS = {
     lunch_breaks: 0.5
 };
 
-export default function OptimizerPage({ onSelectSchedule }) {
-
-    function toGridProps(sections) {
+function toGridProps(sections) {
         if (!sections) return { inputdf: [], sectiondf: [], timeblockdf: [] };
 
         const inputdf = sections.map(s => ({
@@ -41,12 +39,16 @@ export default function OptimizerPage({ onSelectSchedule }) {
     return { inputdf, sectiondf, timeblockdf }
 }
 
+export default function OptimizerPage({ onSelectSchedule }) {  
+
     const [selectedCourses, setSelectedCourses] = useState([])
     const [weights, setWeights] = useState(DEFAULT_WEIGHTS)
     const [results, setResults] = useState([])
     const [currentIndex, setCurrentIndex] = useState(0)
 
     const { mutate, isPending, isError, error } = useOptimizer()
+
+    const[message, setMessage] = useState("")
 
     // 3. Handlers
     const handleAdd = (course) => {
@@ -68,11 +70,14 @@ export default function OptimizerPage({ onSelectSchedule }) {
             {
                 onSuccess: (data) => {
                     // Assuming FastAPI returns { results: [...] }
-                    setResults(data.results || []);
-                    setCurrentIndex(0);
+                    setResults(data.results || [])
+                    setCurrentIndex(0)
+                    if (data.results.length === 0) {
+                        setMessage(data.message || "No valid schedules found.")
+                    }
                 },
                 onError: (err) => {
-                    console.error('Optimize failed:', err);
+                    console.error('Optimize failed:', err)
                 },
             }
         );
@@ -114,6 +119,20 @@ export default function OptimizerPage({ onSelectSchedule }) {
                 {isPending ? 'Generating...' : 'Generate schedules'}
             </button>
 
+            {/* Display "No Results" Message */}
+            {!isPending && results.length === 0 && message && (
+                <div style={{ 
+                    marginTop: '20px', 
+                    padding: '16px', 
+                    backgroundColor: '#fffbeb', 
+                    border: '1px solid #f59e0b', 
+                    borderRadius: '8px',
+                    color: '#b45309' 
+                }}>
+                    <p><strong>Heads up:</strong> {message}</p>
+                </div>
+            )}
+
             {results.length > 0 && (
                 <div style={{ marginTop: '40px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
@@ -123,20 +142,20 @@ export default function OptimizerPage({ onSelectSchedule }) {
                         >
                             ← Prev
                         </button>
-                        <span>
-                            Schedule {currentIndex + 1} of {results.length} 
-                            — Score: {results[currentIndex].score?.toFixed(2)}
-                        </span>
                         <button
                             onClick={() => setCurrentIndex(i => Math.min(results.length - 1, i + 1))}
                             disabled={currentIndex === results.length - 1}
                         >
                             Next →
                         </button>
+                        <span>
+                            Schedule {currentIndex + 1} of {results.length} 
+                            — Score: {results[currentIndex].score?.toFixed(2)}
+                        </span>
                     </div>
 
                 <WeeklyGrid
-                    {...toGridProps(results[currentIndex].sections)}
+                    {...toGridProps(results[currentIndex]?.sections)}
                     coursedf={[]}
                     onBlockClick={() => {}}
                 />
